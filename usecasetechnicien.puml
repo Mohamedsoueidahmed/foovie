@@ -1,0 +1,45 @@
+@startuml UC_Technicien
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #E8F8F1
+  BorderColor #1E8449
+}
+title Cas d'utilisation — Technicien
+
+actor "Technicien" as Tech
+
+rectangle "Système de gestion des opérations aéroportuaires" {
+  usecase "démarrer une session"                 as UC1
+  usecase "consulter l'état des équipements"     as UC2
+  usecase "consulter les alertes"                as UC3
+  usecase "consulter NOTAM / météo"              as UC4
+  usecase "signaler un besoin de maintenance"    as UC5
+  usecase "mettre à jour l'état des équipements" as UC6
+  usecase "enregistrer une intervention"         as UC7
+  usecase "fermer une panne"                     as UC8
+  usecase "fermer la session"                    as UC9
+  usecase "s'authentifier"                       as AUTH
+
+  Tech -- UC1
+  Tech -- UC2
+  Tech -- UC3
+  Tech -- UC4
+  Tech -- UC5
+  Tech -- UC6
+  Tech -- UC7
+  Tech -- UC8
+  Tech -- UC9
+
+  UC1 ..> AUTH : <<include>>
+  UC2 ..> AUTH : <<include>>
+  UC3 ..> AUTH : <<include>>
+  UC4 ..> AUTH : <<include>>
+  UC5 ..> AUTH : <<include>>
+  UC6 ..> AUTH : <<include>>
+  UC7 ..> AUTH : <<include>>
+  UC8 ..> AUTH : <<include>>
+  UC9 ..> AUTH : <<include>>
+}
+@enduml

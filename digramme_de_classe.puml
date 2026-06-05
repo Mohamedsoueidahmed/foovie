@@ -1,0 +1,282 @@
+@startuml FOOVIETEST
+title FOOVIETEST — Diagramme de classes
+' ---------- Style ----------
+skinparam dpi 300
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+skinparam linetype ortho
+
+skinparam nodesep 300
+skinparam ranksep 200
+skinparam padding 10
+
+left to right direction
+hide circle
+skinparam class {
+  BorderColor #34495E
+  ArrowColor #5D6D7E
+  AttributeFontColor #444444
+  FontColor #1B2631
+}
+skinparam package {
+  BorderColor #909497
+  FontColor #2C3E50
+  FontStyle bold
+}
+
+'  ÉNUMÉRATION 
+enum StatutPanne {
+   EN_ATTENTE_VALIDATION
+   VALIDEE
+   EN_COURS_TRAITEMENT
+   FERMEE
+}
+
+' ==============================les classes =======================
+package "Acteurs" #EBF5FB {
+
+  class AgentService #D4E6F1 {
+    # idAgent : String
+    # nom : String
+    # prenom : String
+    + sAuthentifier() : boolean
+    + demarrerSession() : Session
+    + fermerSession() : void
+    + declarerEvenement() : Evenement
+    + declarerPanne() : Panne
+    + joindrePhotoGeolocalisee(e : Evenement) : PhotoGeolocalisee
+    + consulterNOTAM_Meteo() : List<NOTAM_Meteo>
+    + consulterEtatEquipements() : List<Equipement>
+    + consulterConsignes() : List<ConsigneInstruction>
+    + consulterAlertes() : List<Alerte>
+    + mettreAJourEtatEquipement() : void
+    + redigerCompteRendu() : CompteRendu
+  }
+
+  class ChefDeQuart #A9CCE3 {
+    + consulterEvenementsEnCours() : List<Evenement>
+    + gererTableauService() : void
+    + ajouterConsigne() : ConsigneInstruction
+    + redigerNOTAM_Meteo() : NOTAM_Meteo
+    + validerPanne(p : Panne) : void
+    + envoyerAlerte(t : Technicien) : Alerte
+    + validerCompteRendu(c : CompteRendu) : void
+    + genererRapportPeriodique() : RapportPeriodique
+    + validerDemandeMaintenance(d : DemandeMaintenance) : void
+    + consulterRemarques() : List<RemarqueChefService>
+  }
+
+  class Technicien #A3E4D7 {
+    - idTechnicien : String
+    - nom : String
+    - specialite : String
+    + sAuthentifier() : boolean
+    + demarrerSession() : Session
+    + fermerSession() : void
+    + consulterEtatEquipements() : List<Equipement>
+    + consulterAlertes() : List<Alerte>
+    + consulterNOTAM_Meteo() : List<NOTAM_Meteo>
+    + signalerDemandeMaintenance() : DemandeMaintenance
+    + mettreAJourEtatEquipement() : void
+    + enregistrerIntervention() : Intervention
+    + fermerPanne(p : Panne) : void
+  }
+
+  class ChefService #AEB6BF {
+    - idChef : String
+    - nom : String
+    - bureau : String
+    + consulterStatistiques() : Statistiques
+    + consulterRapportsPeriodiques() : List<RapportPeriodique>
+    + consulterHistoriquePannes() : HistoriquePannes
+    + consulterEtatEquipements() : List<Equipement>
+    + ajouterRemarque() : RemarqueChefService
+  }
+
+  AgentService <|-- ChefDeQuart
+}
+
+ 
+package "Activité de quart" #EAFAF1 {
+
+  class Session #ABEBC6 {
+    - idSession : String
+    - dateDebut : DateTime
+    - dateFin : DateTime
+    - active : boolean 
+    + demarrer() : void
+    + fermer() : void
+  }
+
+  class Evenement #A9DFBF {
+    - id : String
+    - description : String
+    - date : DateTime
+  }
+
+  class PhotoGeolocalisee #7DCEA0 {
+    - url : String
+    - latitude : float
+    - longitude : float
+  }
+
+  class CompteRendu #D5F5E3 {
+    - id : String
+    - contenu : String
+    - date : DateTime
+    - valide : boolean
+  }
+}
+
+'  ÉQUIPEMENTS & MAINTENANCE 
+package "Équipements & Maintenance" #FEF5E7 {
+
+  class Equipement #FAD7A0 {
+    - id : String
+    - nom : String
+    - etat : String
+    - localisation : String
+  }
+
+  class Panne #F8C471 {
+   id : String
+   description : String
+   statut : StatutPanne
+   dateDeclaration : DateTime
+   dateValidation : DateTime
+  }
+
+  class Intervention #FDEBD0 {
+    - id : String
+    - date : DateTime
+    - duree : int
+    - description : String
+  }
+
+  class DemandeMaintenance #F5CBA7 {
+    - id : String
+    - description : String
+    - statut : StatutDemande
+  }
+
+  class Alerte #F0B27A {
+    - id : String
+    - message : String
+    - date : DateTime
+    - priorite : int
+  }
+}
+
+' SUPERVISION & REPORTING 
+package "Supervision" #F4ECF7 {
+
+  class TableauService #D2B4DE {
+    - date : Date
+  }
+
+  class ConsigneInstruction #D7BDE2 {
+    - id : String
+    - contenu : String
+    - dateEmission : DateTime
+  }
+
+  class NOTAM_Meteo #E8DAEF {
+    - type : String
+    - contenu : String
+    - validite : DateTime
+  }
+
+  class RapportPeriodique #EBDEF0 {
+    - periode : String
+    - dateGeneration : DateTime
+    - contenu : String
+  }
+
+  class RemarqueChefService #F5EEF8 {
+    - contenu : String
+    - date : DateTime
+  }
+
+  class Statistiques #C39BD3 {
+    - donnees : String
+    - periode : String
+  }
+
+  class HistoriquePannes #BB8FCE {
+    + consulter() : List<Panne>
+  }
+}
+
+' ================= les relations ==================
+
+' Connexion / sessions (un agent OU un technicien) 
+AgentService "1" -- "0..*" Session : ouvre/ferme >
+Technicien   "1" -- "0..*" Session :ouvre/ferme >
+
+
+' La session 
+Session "1" -- "0..*" Evenement : enregistre >
+Evenement "1" *-- "0..*" PhotoGeolocalisee : illustré par >
+
+' Comptes rendus
+AgentService "1" -- "0..*" CompteRendu : rédige >
+CompteRendu "0..*" -- "1" Session : lié à >
+ChefDeQuart "0..1" -- "0..*" CompteRendu : valide >
+
+
+' PANNE 
+AgentService "1" --> "0..*" Panne : déclare >
+Equipement "1" <-- "0..*" Panne : concerne >
+ChefDeQuart "0..1" --> "0..*" Panne : valide >
+Panne "1" --> "0..*" Alerte : déclenche >
+ChefDeQuart "1" --> "0..*" Alerte : envoie >
+Technicien "1" <-- "0..*" Alerte : reçoit >
+Technicien "1" --> "0..*" Intervention : réalise >
+Panne "1" <-- "0..*" Intervention : traite >
+Equipement "1" <-- "0..*" Intervention : concerne >
+
+' Maintenance 
+Technicien "1" -- "0..*" DemandeMaintenance : signale >
+ChefDeQuart "1" -- "0..*" DemandeMaintenance : valide >
+DemandeMaintenance "1" -- "0..*" Intervention : déclenche >
+
+' Tableau de service basé sur les sessions 
+ChefDeQuart "1" -- "0..*" TableauService : gère >
+TableauService "1" -- "0..*" Session : contient >
+
+/' les consignes et instructions émises par le chef de quart
+, qui sont des éléments clés de la gestion opérationnelle du quart '/
+
+ChefDeQuart "1" -- "0..*" ConsigneInstruction : ajoute >
+ChefDeQuart "1" -- "0..*" NOTAM_Meteo : rédige >
+
+/' les rapports périodiques générés par le chef de quart, qui sont des documents 
+importants pour le suivi et l'analyse des opérations du quart qui sont ensuite 
+consultés par le chef de service '/
+ChefDeQuart "1" -- "0..*" RapportPeriodique : génère >
+ChefService "1" -- "0..*" RapportPeriodique : consulte >
+
+/' les remarques émises par le chef de service, qui sont des feedbacks
+ importants pour le chef de quart et les agents de service '/
+ChefService "1" -- "0..*" Statistiques : consulte >
+ChefService "1" -- "0..*" HistoriquePannes : consulte >
+HistoriquePannes "1" o-- "0..*" Panne : regroupe >
+ChefService "1" -- "0..*" RemarqueChefService : ajoute >
+ChefDeQuart "1" -- "0..*" RemarqueChefService : consulte >
+
+
+' ===================== les notes ==================
+' des notes pour clarifier certaines relations ou concepts
+note top of Intervention
+  Une intervention est liée à **une panne
+  OU une demande de maintenance validée**.
+end note
+
+note bottom of NOTAM_Meteo
+  Rédigée par le chef de quart,
+  consultée par tous les acteurs.
+end note
+
+
+@enduml
