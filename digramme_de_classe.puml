@@ -1,4 +1,4 @@
-@startuml FOOVIETEST
+@startuml FOOVIETEST-ASECNAstage
 title FOOVIETEST — Diagramme de classes
 ' ---------- Style ----------
 skinparam dpi 300

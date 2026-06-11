@@ -1,0 +1,33 @@
+@startuml UC_ChefService
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #F4ECF7
+  BorderColor #7D3C98
+}
+title Cas d'utilisation — Chef de service
+
+actor "Chef de service" as CS
+
+rectangle "Système de gestion des opérations aéroportuaires" {
+  usecase "consulter les statistiques"              as UC1
+  usecase "consulter les rapports périodiques"      as UC2
+  usecase "consulter l'historique des pannes"       as UC3
+  usecase "consulter l'état des équipements"        as UC4
+  usecase "ajouter des remarques et instructions\n(au chef de quart)" as UC5
+  usecase "s'authentifier"                          as AUTH
+
+  CS -- UC1
+  CS -- UC2
+  CS -- UC3
+  CS -- UC4
+  CS -- UC5
+
+  UC1 ..> AUTH : <<include>>
+  UC2 ..> AUTH : <<include>>
+  UC3 ..> AUTH : <<include>>
+  UC4 ..> AUTH : <<include>>
+  UC5 ..> AUTH : <<include>>
+}
+@enduml
