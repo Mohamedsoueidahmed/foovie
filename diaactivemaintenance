@@ -1,0 +1,90 @@
+@startuml ActiviteMaintenance
+
+title Diagramme d'activité — Gestion de la maintenance
+
+skinparam shadowing false
+
+|Technicien|
+start
+
+:Détecter une panne\n(équipement défectueux);
+:Signaler une DemandeMaintenance;
+
+|Système|
+:Enregistrer la DemandeMaintenance;
+
+|Chef de Quart|
+:Consulter la DemandeMaintenance;
+
+if (Demande valide ?) then (Oui)
+
+:Valider la DemandeMaintenance;
+
+|Système|
+:Créer une Intervention;
+:Notifier le technicien;
+
+|Technicien|
+:Recevoir l'intervention;
+:Effectuer le diagnostic;
+:Réparer l'équipement;
+
+if (Panne résolue ?) then (Oui)
+
+:Mettre à jour l'état\nde l'équipement;
+
+|Système|
+:Clôturer la DemandeMaintenance;
+
+else (Non)
+
+|Système|
+:Notifier le Chef de Quart\néchec de résolution;
+
+|Chef de Quart|
+:Affecter un autre technicien;
+
+|Système|
+:Notifier le nouveau technicien;
+
+|Technicien|
+:Effectuer un nouveau diagnostic;
+:Tenter une nouvelle réparation;
+
+if (Panne résolue ?) then (Oui)
+
+:Mettre à jour l'état\nde l'équipement;
+
+|Système|
+:Clôturer la DemandeMaintenance;
+
+else (Non)
+
+|Chef de Quart|
+:Analyser la situation;
+:Préparer une demande\nd'intervention officielle;
+:Préciser les ressources nécessaires\n(pièces à remplacer,\nmatériels et moyens nécessaires);
+
+|Système|
+:Enregistrer la demande officielle;
+:Transmettre la demande au Chef d'Unité;
+
+|Chef d'Unité|
+:Consulter la demande;
+:Organiser la prise en charge\nde l'intervention;
+
+endif
+
+endif
+
+
+else (Non)
+
+|Chef de Quart|
+:Rejeter la DemandeMaintenance;
+
+endif
+
+stop
+
+@enduml
