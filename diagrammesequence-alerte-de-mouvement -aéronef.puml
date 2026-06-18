@@ -1,0 +1,81 @@
+@startuml
+title Diagramme de séquence : Déclaration d'une alerte de mouvement d'aéronef
+
+actor "Chef de quart TWR" as TWR
+actor "Chef de quart SLI" as ChefSLI
+actor "Agents SLI" as AgentSLI
+actor "Chef de service SLI" as ChefSvcSLI
+
+boundary "Interface PVN" as IHM
+control "Contrôleur d'Alerte" as Ctrl
+service "Service Notification" as Notif
+entity "Alerte" as Alerte
+entity "Intervention" as Intervention
+entity "Rapport Quart" as Rapport
+
+== Déclaration de l'alerte ==
+TWR -> IHM : Déclare une alerte\n(atterrissage/décollage)
+IHM -> Ctrl : Transmettre alerte (type, détails)
+Ctrl -> Alerte : Créer alerte (état initial)
+Alerte --> Ctrl : Alerte créée
+Ctrl -> Notif : Notifier service SLI (nouvelle alerte)
+Notif -> ChefSLI : Notification alerte
+
+== Consultation et déclenchement intervention ==
+ChefSLI -> IHM : Consulter l'alerte
+IHM -> Ctrl : Récupérer alerte (id)
+Ctrl -> Alerte : Charger
+Alerte --> Ctrl : Données
+Ctrl --> IHM : Afficher alerte
+IHM --> ChefSLI : Détails alerte
+
+ChefSLI -> IHM : Déclencher intervention (décision)
+IHM -> Ctrl : Créer intervention (alerte_id)
+Ctrl -> Intervention : Créer intervention (état "En cours")
+Intervention --> Ctrl : OK
+Ctrl -> Notif : Notifier agents SLI (nouvelle intervention)
+Notif -> AgentSLI : Notification intervention
+
+AgentSLI -> IHM : Consulter intervention
+IHM -> Ctrl : Récupérer intervention
+Ctrl -> Intervention : Charger
+Intervention --> Ctrl : Données
+Ctrl --> IHM : Afficher intervention
+IHM --> AgentSLI : Détails intervention
+AgentSLI -> AgentSLI : Se mettre en garde
+
+== Clôture après mouvement ==
+alt Sans problème
+    ChefSLI -> IHM : Clôturer intervention
+    IHM -> Ctrl : Clôturer intervention (id)
+    Ctrl -> Intervention : Mise à jour état "Clôturée"
+    Intervention --> Ctrl : OK
+else Avec problème
+    AgentSLI -> IHM : Intervenir sur l'équipement
+    note right : Intervention terrain résolue
+    AgentSLI -> IHM : Signaler problème résolu
+    IHM -> Ctrl : Notifier résolution (intervention_id)
+    Ctrl -> Intervention : Mettre à jour statut "Résolue"
+    Intervention --> Ctrl : OK
+    ChefSLI -> IHM : Clôturer intervention
+    IHM -> Ctrl : Clôturer intervention (id)
+    Ctrl -> Intervention : Mise à jour état "Clôturée"
+    Intervention --> Ctrl : OK
+end
+
+== Rapport de quart ==
+ChefSLI -> IHM : Renseigner le rapport de quart
+IHM -> Ctrl : Créer rapport (alerte_id, intervention_id, contenu)
+Ctrl -> Rapport : Créer rapport
+Rapport --> Ctrl : OK
+Ctrl -> Notif : Notifier chef de service SLI (rapport disponible)
+Notif -> ChefSvcSLI : Notification nouveau rapport
+
+ChefSvcSLI -> IHM : Consulter le rapport de quart
+IHM -> Ctrl : Récupérer rapport
+Ctrl -> Rapport : Charger
+Rapport --> Ctrl : Données rapport
+Ctrl --> IHM : Afficher rapport
+IHM --> ChefSvcSLI : Rapport affiché
+
+@enduml

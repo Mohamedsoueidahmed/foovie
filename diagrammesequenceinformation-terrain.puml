@@ -1,0 +1,94 @@
+@startuml
+title Diagramme de séquence - Validation d'une information terrain
+
+actor "Agent Terrain" as AG
+participant "Système PVN" as PVN
+database "Base de données" as BDD
+actor "Chef de Quart" as CQ
+
+
+== Création de l'information ==
+
+AG -> PVN : Saisir une information\nAjouter une photo\nEnvoyer
+activate AG
+activate PVN
+
+PVN -> BDD : Enregistrer l'information
+
+activate BDD
+BDD --> PVN : Confirmation d'enregistrement
+
+
+PVN -> BDD : Initialiser état = "En attente"
+
+PVN -> CQ : Notifier nouvelle information
+activate CQ
+
+
+
+
+== Consultation et décision ==
+
+CQ -> PVN : Consulter l'information
+
+activate PVN
+
+PVN -> BDD : Récupérer les informations
+
+activate BDD
+BDD --> PVN : Données de l'information
+
+
+PVN --> CQ : Afficher l'information
+
+
+
+
+alt Information validée
+
+
+CQ -> PVN : Valider l'information
+
+activate PVN
+
+PVN -> BDD : Mettre à jour état = "Validée"
+
+CQ -> PVN : Publier l'information
+
+PVN -> BDD : Enregistrer la publication
+
+PVN -> AG : Notifer quel'information est publiée
+
+deactivate PVN
+
+
+else Information rejetée
+
+
+CQ -> PVN : Rejeter l'information
+
+activate PVN
+
+PVN -> CQ : Demander le motif du rejet
+
+deactivate PVN
+
+
+CQ -> PVN : Saisir le motif du rejet
+
+activate PVN
+
+PVN -> BDD : Enregistrer le motif\nEtat = "Rejetée"
+
+PVN -> AG : Notifier le rejet\nTransmettre le motif
+
+deactivate PVN
+
+
+AG -> PVN : Consulter le motif du rejet
+
+
+end
+
+
+@enduml

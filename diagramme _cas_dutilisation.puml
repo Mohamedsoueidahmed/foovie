@@ -1,0 +1,161 @@
+@startuml PVN_Diagramme_Cas_Utilisation
+
+' ============================================================
+'  PVN - Portail de Veille et de Notification (ASECNA)
+'  Diagramme de cas d'utilisation
+'  Source metier : bloc-note de modelisation (reference)
+'                  + brief (perimetre des cas d'utilisation)
+' ============================================================
+
+left to right direction
+skinparam shadowing false
+skinparam ranksep 200
+skinparam nodesep 10
+skinparam actorStyle awesome
+
+
+
+' ---------------- ACTEURS ----------------
+actor "Utilisateur" as U 
+actor "Agent Terrain" as AT 
+
+
+actor "Chef de Quart" as CQ
+
+actor "Superviseur"     as SUP
+actor "Chef d'Unite"    as CU
+actor "Direction"       as DIR
+actor "Administrateur"  as ADM
+
+' ---------------- HIERARCHIE DES ACTEURS ----------------
+U <|-- AT
+U <|-- SUP
+U <|-- CU
+U <|-- DIR
+U <|-- ADM
+
+
+AT <|-- CQ
+
+' ---------------- CAS D'UTILISATION ----------------
+rectangle "Systeme PVN" {
+
+  usecase "S'authentifier" as UC1
+
+  package "Consultation & Acces" {
+    usecase "Consulter les alertes" as UC2
+    usecase "Consulter les notifications" as UC3
+    usecase "Consulter les consignes" as UC4
+    usecase "Consulter les instructions" as UC5
+    usecase "Consulter les informations\noperationnelles" as UC6
+    usecase "Consulter l'historique" as UC7
+    usecase "Effectuer une recherche\nmulticritere" as UC8
+    usecase "consulter l'etat des equipements" as equip
+    usecase "Demande de maintenance" as mai
+  }
+
+  package "Saisie & Terrain" {
+    usecase "Saisir une information\noperationnelle" as UC9
+    usecase "Modifier une information\nnon validee" as UC10
+    usecase "Joindre une photo\ngeolocalisee" as UC11
+    usecase "Diagnostiquer les\nequipements" as UC12
+    usecase "Clôturer une intervention" as clotu
+  }
+
+  package "Coordination de Quart" {
+    usecase "Valider une information" as UC14
+    usecase "Publier une information" as UC15
+    usecase "Rejeter une information" as UC16
+    usecase "Saisir le motif de rejet" as UC17
+    usecase "Gerer le tableau de service" as UC18
+    usecase "Generer un rapport de quart" as UC19
+    usecase "Consulter les rapports\nde quart" as UC20
+    usecase "Emettre une demande\nd'intervention" as UC21
+    usecase "Diffuser une alerte" as UC22
+    usecase "validation demande maintenace" as validmai
+    usecase "rejeter la demande de maintenance" as rejetmai
+  }
+
+  package "Pilotage & Decision" {
+    usecase "Verifier les informations\nvalidees" as UC23
+    usecase "Consulter les rapports\ndes chefs de quart" as UC24
+    usecase "Definir les instructions" as UC25
+    usecase "Definir les consignes" as UC26
+    usecase "Consulter les decisions\nde la direction" as UC27
+    usecase "Consulter les statistiques" as UC28
+    usecase "Suivre l'activite du service" as UC29
+    usecase "Consulter les demandes\nd'intervention" as UC30
+    usecase "Valider les demandes\nd'intervention" as UC31
+    usecase "Generer un rapport\nde service" as UC32
+    usecase "Generer une decision" as UC33
+    usecase "Consulter les rapports globaux\ndes chefs d'unite" as UC34
+    usecase "Consulter les statistiques\nglobales" as UC35
+  }
+
+  package "Administration" {
+    usecase "Gerer les utilisateurs" as UC36
+    usecase "Gerer les roles" as UC37
+    usecase "Gerer les services" as UC38
+    usecase "Parametrer le systeme" as UC39
+  }
+}
+
+' ---------------- ASSOCIATIONS ACTEUR / CAS ----------------
+U  -- UC1
+
+AT -- UC2
+AT -- UC3
+AT -- UC4
+AT -- UC5
+AT -- UC6
+AT -- UC7
+AT -- UC9
+AT -- UC10
+AT -- UC12
+AT -- equip
+AT -- clotu
+AT -- mai
+
+CQ -- UC14
+CQ -- UC15
+CQ -- UC16
+CQ -- UC18
+CQ -- UC19
+CQ -- UC20
+CQ -- UC21
+CQ -- UC22
+CQ -- UC30
+CQ -- validmai
+CQ -- rejetmai
+
+SUP -- UC23
+SUP -- UC24
+
+CU -- UC25
+CU -- UC26
+CU -- UC27
+CU -- UC28
+CU -- UC29
+CU -- UC31
+CU -- UC32
+
+DIR -- UC33
+DIR -- UC34
+DIR -- UC35
+
+ADM -- UC36
+ADM -- UC37
+ADM -- UC38
+ADM -- UC39
+
+' ---------------- RELATIONS <<include>> ----------------
+UC16 ..> UC17 : <<include>>
+UC31 ..> UC30 : <<include>>
+rejetmai ..> UC17 : <<include>>
+' ---------------- RELATIONS <<extend>> ----------------
+UC11 ..> UC9  : <<extend>>
+UC11 ..> UC12 : <<extend>>
+UC8  ..> UC7  : <<extend>>
+UC11 ..> clotu : <<extend>>
+
+@enduml

@@ -1,0 +1,225 @@
+@startuml FOOVIETST-ASECNAstageE
+title FOOVIETEST — Diagramme de classes
+
+' ---------- Style ----------
+skinparam dpi 300
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 300
+skinparam ranksep 200
+skinparam padding 10
+
+left to right direction
+hide circle
+skinparam class {
+  BorderColor #34495E
+  ArrowColor #5D6D7E
+  AttributeFontColor #444444
+  FontColor #1B2631
+}
+skinparam package {
+  BorderColor #909497
+  FontColor #2C3E50
+  FontStyle bold
+}
+
+
+' ============================== CLASSES =======================
+package "Acteurs" #EBF5FB {
+
+  class Utilisateur {
+    - id : String
+    - nom : String
+    - prenom : String
+    - email : String
+    - motDePasse : String
+ }
+
+  class AgentService #D4E6F1 {
+    # type : TypeDeService
+  }
+
+  class ChefDeQuart #A9CCE3 {
+    '
+  }
+
+  class ChefService #AEB6BF {
+    - bureau : String
+  }
+
+  class superviseur  #d7480f {
+    - bureau : String
+  }
+
+  class DIRECTION #98c91b {
+    - bureau : String
+  }
+
+
+Utilisateur <|-- AgentService
+Utilisateur <|-- ChefService
+Utilisateur <|-- superviseur
+Utilisateur <|-- Direction
+AgentService <|-- ChefDeQuart
+}
+
+package "Activité de quart" #EAFAF1 {
+
+
+  class Evenement #A9DFBF {
+    - id : String
+    - description : String
+    - date : DateTime
+  }
+
+  class PhotoGeolocalisee #7DCEA0 {
+    - url : String
+    - latitude : float
+    - longitude : float
+  }
+
+  class RapportDeQuart #D5F5E3 {
+    - id : String
+    - contenu : String
+    - date : DateTime
+    - valide : boolean
+  }
+
+   
+
+
+}
+
+package "Équipements & Maintenance" #FEF5E7 {
+
+  class Equipement #FAD7A0 {
+    - id : String
+    - nom : String
+    - etat : String
+    - localisation : String
+  }
+
+  class Panne #F8C471 {
+    - id : String
+    - description : String
+    - statut : StatutPanne
+    - dateDeclaration : DateTime
+    - dateValidation : DateTime
+  }
+
+  class Intervention #FDEBD0 {
+    - id : String
+    - date : DateTime
+    - duree : int
+    - description : String
+  }
+
+  class DemandeMaintenance #F5CBA7 {
+    - id : String
+    - description : String
+    - statut : StatutDemande
+  }
+
+  class Alerte #F0B27A {
+    - id : String
+    - message : String
+    - date : DateTime
+    - priorite : int
+  }
+}
+
+package "Supervision" #F4ECF7 {
+
+  class TableauService #D2B4DE {
+    - date : Date
+  }
+
+  class ConsigneInstruction #D7BDE2 {
+    - id : String
+    - contenu : String
+    - dateEmission : DateTime
+  }
+
+  class informationopreationnel #E8DAEF {
+    - type : String
+    - contenu : String
+    - validite : DateTime
+  }
+
+  class RapportPeriodique #EBDEF0 {
+    - periode : String
+    - dateGeneration : DateTime
+    - contenu : String
+  }
+
+  class DecisionDirection #D5DBDB {
+    - id : String
+    - contenu : String
+    - dateDecision : DateTime
+}
+
+
+}
+
+
+
+'  ÉNUMÉRATIONS
+enum StatutPanne {
+   EN_ATTENTE_VALIDATION
+   VALIDEE
+   EN_COURS_TRAITEMENT
+   FERMEE
+}
+
+enum TypeDeService {
+   AIM
+   CNS
+   IRE
+   SLI
+   MET
+}
+enum StatutDemande {
+    EN_ATTENTE
+    VALIDEE
+    EN_COURS
+    TERMINEE
+    REFUSEE
+}
+
+' ================= RELATIONS ==================
+
+AgentService "1" -- "0..*" Evenement : (saisit)>
+Evenement "1" --> "0..*" PhotoGeolocalisee : (joint)>
+AgentService "1" -- "0..*" Panne : (déclare)>
+Equipement "1" -- "0..*" Panne : (concerne)>
+ChefDeQuart "1" -- "0..*" Panne : (valide)>
+ChefDeQuart "1" -- "0..*" Alerte : (déclenche)>
+Equipement "1" -- "0..*" Alerte : (concerne)>
+AgentService "*" -- "*" Alerte : (consulte)>
+Panne "1" -- "0..*" Alerte : (genere)>
+Alerte "1" -- "0..*" Intervention : (déclenche)>
+AgentService "1" -- "0..*" Intervention : (réalise)>
+Equipement "1" -- "0..*" Intervention : (concerne)>
+AgentService "1" -- "0..*" Equipement : (met à jour l'état)>
+AgentService "1" -- "0..*" DemandeMaintenance : (crée)>
+DemandeMaintenance "1" -- "0..*" Intervention : (génère)>
+ChefDeQuart "1" -- "0..*" RapportDeQuart : (rédige)>
+ChefService "1" -- "0..*" RapportDeQuart : (consulte)>
+superviseur "*" -- "*" RapportDeQuart : (consulte)>
+ChefService "1" -- "0..*" RapportPeriodique : (génère)>
+DIRECTION "1" -- "0..*" RapportPeriodique : (consulte)>
+DIRECTION "1" -- "0..*" DecisionDirection : (prend)>
+ChefService "1" -- "0..*" DecisionDirection : (consulte)>
+ChefService "1" -- "0..*" ConsigneInstruction : (emet)>
+AgentService "*" -- "*" ConsigneInstruction : (consulte)>
+ChefDeQuart "1" -- "0..*" TableauService : (gère)>
+AgentService "*" -- "*" TableauService : (consulte)>>
+superviseur "1" -- "0..*" informationopreationnel : (saisit)>
+ChefService "1" -- "0..*" informationopreationnel : (consulte)>
+ChefDeQuart "1" -- "0..*" InformationOperationnelle : (consulte)>
+
+
+
+
+@enduml

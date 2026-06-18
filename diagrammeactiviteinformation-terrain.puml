@@ -1,0 +1,44 @@
+@startuml
+title Validation d'une information terrain
+
+|Agent Terrain|
+start
+:Saisir une information;
+:Joindre une photo;
+:Envoyer l'information;
+
+|Système PVN|
+:Enregistrer l'information;
+:Mettre l'état à "En attente";
+:Notifier le Chef de Quart;
+
+|Chef de Quart|
+:Consulter l'information;
+
+if (Valider l'information ?) then (Oui)
+  :Valider l'information;
+  :Publier l'information;
+  |Système PVN|
+  :Mettre l'état à "Validée";
+  :Notifier l'Agent Terrain (validation);
+  |Agent Terrain|
+  :Consulter la validation;
+else (Non)
+  |Chef de Quart|
+  :Rejeter l'information;
+  |Système PVN|
+  :Demander le motif du rejet;
+  |Chef de Quart|
+  :Saisir le motif du rejet;
+  |Système PVN|
+  :Mettre l'état à "Rejetée";
+  :Notifier l'Agent Terrain;
+  :Transmettre le motif du rejet;
+  |Agent Terrain|
+  :Consulter le motif du rejet;
+endif
+
+|Agent Terrain|
+stop
+
+@enduml

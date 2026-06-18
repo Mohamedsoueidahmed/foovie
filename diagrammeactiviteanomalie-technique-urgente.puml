@@ -1,0 +1,65 @@
+@startuml
+title Gestion d'une anomalie technique urgente
+
+|Chef de Quart TWR|
+start
+:Détecter une anomalie urgente sur un matériel;
+:Déclarer une alerte urgente;
+
+|Système PVN|
+:Enregistrer l'alerte;
+:Notifier le service CNS;
+
+|Chef de Quart CNS|
+:Consulter l'alerte;
+:Déclencher l'intervention;
+:Affecter les agents CNS;
+
+|Système PVN|
+:Notifier les agents affectés;
+
+|Agents CNS|
+:Consulter l'alerte d'intervention;
+:Se déplacer vers l'équipement;
+:Effectuer un diagnostic;
+
+if (Anomalie réglable sur place ?) then (Oui)
+  |Agents CNS|
+  :Effectuer la réparation;
+  :Tester le fonctionnement;
+
+  |Chef de Quart CNS|
+  :Clôturer l'intervention;
+  :Établir un compte rendu;
+  :Transmettre le compte rendu au Chef d'Unité;
+
+  |Chef d'Unité CNS|
+  :Recevoir le compte rendu;
+
+  |Système PVN|
+  :Mettre l'état à "Clôturée";
+  :Notifier la résolution au Chef TWR\net aux agents;
+
+else (Non)
+  |Agents CNS|
+  :Signaler une anomalie critique;
+
+  |Chef de Quart CNS|
+  :Analyser la situation;
+  :Préparer une demande d'intervention\n(transmise au Chef d'Unité);
+  :Définir les ressources nécessaires;
+
+  |Chef d'Unité CNS|
+  :Recevoir et instruire la demande;
+
+  |Système PVN|
+  :Mettre l'état à "En attente décision\ndu Chef d'Unité";
+  :Notifier le Chef TWR du transfert;
+
+endif
+
+|Chef de Quart TWR|
+:Prendre connaissance du résultat de l'alerte;
+stop
+
+@enduml

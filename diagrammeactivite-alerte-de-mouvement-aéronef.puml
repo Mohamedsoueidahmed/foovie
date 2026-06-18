@@ -1,0 +1,40 @@
+@startuml
+title Gestion d'une alerte de mouvement d'aéronef
+
+|Chef de quart TWR|
+start
+:Déclarer une alerte de mouvement d'aéronef;
+
+|Système PVN|
+:Enregistrer l'alerte;
+:Notifier le service SLI;
+
+|Chef de quart SLI|
+:Consulter l'alerte;
+:Déclencher une alerte d'intervention;
+
+|Agents SLI|
+:Se mettre en garde;
+:Surveiller l'atterrissage ou le décollage;
+
+if (Incident détecté ?) then (Oui)
+
+:Intervenir;
+
+
+|Agents SLI|
+:Résoudre l'incident;
+
+else (Non)
+
+endif
+
+|Chef de quart SLI|
+:Clôturer l'alerte d'intervention;
+:Rédiger le rapport de quart;
+
+|Chef de service SLI|
+:Consulter le rapport;
+
+stop
+@enduml
